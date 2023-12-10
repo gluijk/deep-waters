@@ -231,3 +231,7 @@ for (frame in 0:(NFRAMES-1)) {
 }
 
 
+
+# Building MP4:
+# ffmpeg -framerate 30 -i img%4d.png -i oblivionwakingup.wav
+#        -c:v libx264 -crf 18 -pix_fmt yuv420p deepwaters.mp4
