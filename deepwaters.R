@@ -17,13 +17,7 @@ hillshade=function(map, dx=25, dlight=c(0, 2, 3), gamma=1) {
     
     DIMY=nrow(map)    
     DIMX=ncol(map)
-    
-    # Save map
-    mapnorm=map-min(map)
-    writeTIFF((mapnorm/max(mapnorm))^(1/gamma), "map.tif",
-              bits.per.sample=16, compression="LZW")
-    rm(mapnorm)
-    
+
     dlightM=sum(dlight^2)^0.5
     
     # Vectorial product to calculate n (orthogonal vector)
@@ -46,7 +40,7 @@ hillshade=function(map, dx=25, dlight=c(0, 2, 3), gamma=1) {
     hillshade[c(1,DIMY),]=hillshade[c(2,DIMY-1),]
     hillshade[,c(1,DIMX)]=hillshade[,c(2,DIMX-1)]
     
-    return(hillshade)
+    return(hillshade^(1/gamma))
 }
 
 
