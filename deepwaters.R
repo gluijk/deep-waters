@@ -122,9 +122,9 @@ outline=solid*0
 # 1 pixel thickness outline
 outline[2:(DIMY-1), 2:(DIMX-1)]=
     abs(solid[1:(DIMY-2), 2:(DIMX-1)] -
-            solid[2:(DIMY-1), 2:(DIMX-1)]) +
+        solid[2:(DIMY-1), 2:(DIMX-1)]) +
     abs(solid[2:(DIMY-1), 1:(DIMX-2)] -
-            solid[2:(DIMY-1), 2:(DIMX-1)])
+        solid[2:(DIMY-1), 2:(DIMX-1)])
 # increase to 2 pixel thickness outline
 outline[2:(DIMY-1), 2:(DIMX-1)]=outline[2:(DIMY-1), 2:(DIMX-1)]+
     outline[1:(DIMY-2), 2:(DIMX-1)]+outline[2:(DIMY-1), 3:(DIMX-0)]
