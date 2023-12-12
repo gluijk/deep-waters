@@ -144,6 +144,11 @@ DibujarNumero = function(img, x0, y0, inc=FALSE, val=1, fill=FALSE,
         img=DrawLine(img, x0, y0-height, x0+width, y0-height, inc, val)
     } else if (num=='-') {
         img=DrawLine(img, x0, y0-height/2, x0+width, y0-height/2, inc, val)
+    } else if (num=='m') {
+        img=DrawLine(img, x0, y0-height/2, x0+width, y0-height/2, inc, val)
+        img=DrawLine(img, x0, y0-height/2, x0, y0-height, inc, val)
+        img=DrawLine(img, x0+width/2, y0-height/2, x0+width/2, y0-height, inc, val)
+        img=DrawLine(img, x0+width, y0-height/2, x0+width, y0-height, inc, val)
     } else {
         return(img)  # Cifra inválida
     }
@@ -305,7 +310,7 @@ for (frame in 0:(NFRAMES-1)) {
     
     # Write water level label
     label=NewBitmap(103, 31)
-    TXT=as.character(round(WATERLEVEL))
+    TXT=paste0(as.character(round(WATERLEVEL)),'m')
     LONG=nchar(TXT)
     for (i in 1:LONG) {
         num=substring(TXT, i, i)
