@@ -275,8 +275,8 @@ image(t(hill[nrow(hill):1,]), useRaster=TRUE,
 
 MAXHEIGHT=max(DEM)
 MINHEIGHT=min(DEM)
-COLUP=2
-COLDOWN=0.5
+COLUP=1.8  # 2
+COLDOWN=0.56  # 0.5
 WATERMIN=0.3  # difusse under water colours a bit
 WATERMAX=0.7
 BORDERCOLOUR=0.2
