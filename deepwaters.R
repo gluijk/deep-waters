@@ -106,7 +106,7 @@ DibujarNumero = function(img, x0, y0, inc=FALSE, val=1, fill=FALSE,
     if (num=='0') { 
         img=DrawRect(img, x0, y0, x0+width, y0-height, inc, val, fill)
     } else if (num=='1') {
-        img=DrawLine(img, x0+width, y0, x0+width, y0-height, inc, val)
+        img=DrawLine(img, x0+width/2, y0, x0+width/2, y0-height, inc, val)
     } else if (num=='2') {
         img=DrawLine(img, x0, y0, x0+width, y0, inc, val)
         img=DrawLine(img, x0+width, y0, x0+width, y0-height/2, inc, val)
@@ -285,7 +285,7 @@ mappre=array(0, c(DIMY, DIMX, 3))
 mappre[,,1]=hill
 mappre[,,2]=hill
 mappre[,,3]=hill
-border=which(outline==1)  # draw map borders
+border=which(outline==1)  # to draw map borders
 
 # Initial sequence (water spreads)
 NFRAMES=2190  # 73.00s audio track at 30fps
@@ -309,18 +309,23 @@ for (frame in 0:(NFRAMES-1)) {
     map[,,3][border]=BORDERCOLOUR
     
     # Write water level label
-    label=NewBitmap(103, 31)
     TXT=paste0(as.character(round(WATERLEVEL)),'m')
     LONG=nchar(TXT)
+    label=NewBitmap(251, 63)
     for (i in 1:LONG) {
         num=substring(TXT, i, i)
-        label=DibujarNumero(label, 1+i*22-22, 31, num=num, width=14, height=30)
+        label=DibujarNumero(label, 2+i*44-44, 62, num=num, width=28, height=60)
     }
     label=t(label[,ncol(label):1])
-    meters=which(label==1)
-    map[1000:(1000+31-1),(954-(LONG-1)/2*22):(954-(LONG-1)/2*22+103-1),1][meters]=0
-    map[1000:(1000+31-1),(954-(LONG-1)/2*22):(954-(LONG-1)/2*22+103-1),2][meters]=0
-    map[1000:(1000+31-1),(954-(LONG-1)/2*22):(954-(LONG-1)/2*22+103-1),3][meters]=0
+    # Stroke=3
+    label[1:61,2:250]=label[1:61,2:250]+label[2:62,2:250]
+    label[3:63,2:250]=label[3:63,2:250]+label[2:62,2:250]
+    label[2:62,1:249]=label[2:62,1:249]+label[2:62,2:250]
+    label[2:62,3:251]=label[2:62,3:251]+label[2:62,2:250]
+    meters=which(label!=0)
+    map[950:(950+63-1),(946-(LONG-1)/2*44):(946-(LONG-1)/2*44+251-1),1][meters]=0
+    map[950:(950+63-1),(946-(LONG-1)/2*44):(946-(LONG-1)/2*44+251-1),2][meters]=0
+    map[950:(950+63-1),(946-(LONG-1)/2*44):(946-(LONG-1)/2*44+251-1),3][meters]=0
     
     writePNG(map, paste0("img", ifelse(frame<10, "000",
                 ifelse(frame<100, "00",
@@ -351,18 +356,23 @@ for (frame in 0:(NFRAMES-1)) {
     map[,,3][border]=BORDERCOLOUR
     
     # Write water level label
-    label=NewBitmap(103, 31)
     TXT=paste0(as.character(round(WATERLEVEL)),'m')
     LONG=nchar(TXT)
+    label=NewBitmap(251, 63)
     for (i in 1:LONG) {
         num=substring(TXT, i, i)
-        label=DibujarNumero(label, 1+i*22-22, 31, num=num, width=14, height=30)
+        label=DibujarNumero(label, 2+i*44-44, 62, num=num, width=28, height=60)
     }
     label=t(label[,ncol(label):1])
-    meters=which(label==1)
-    map[1000:(1000+31-1),(954-(LONG-1)/2*22):(954-(LONG-1)/2*22+103-1),1][meters]=0
-    map[1000:(1000+31-1),(954-(LONG-1)/2*22):(954-(LONG-1)/2*22+103-1),2][meters]=0
-    map[1000:(1000+31-1),(954-(LONG-1)/2*22):(954-(LONG-1)/2*22+103-1),3][meters]=0
+    # Stroke=3
+    label[1:61,2:250]=label[1:61,2:250]+label[2:62,2:250]
+    label[3:63,2:250]=label[3:63,2:250]+label[2:62,2:250]
+    label[2:62,1:249]=label[2:62,1:249]+label[2:62,2:250]
+    label[2:62,3:251]=label[2:62,3:251]+label[2:62,2:250]
+    meters=which(label!=0)
+    map[950:(950+63-1),(946-(LONG-1)/2*44):(946-(LONG-1)/2*44+251-1),1][meters]=0
+    map[950:(950+63-1),(946-(LONG-1)/2*44):(946-(LONG-1)/2*44+251-1),2][meters]=0
+    map[950:(950+63-1),(946-(LONG-1)/2*44):(946-(LONG-1)/2*44+251-1),3][meters]=0
 
     writePNG(map, paste0("img", ifelse(frame+Offset<10, "000",
                 ifelse(frame+Offset<100, "00",
