@@ -2,7 +2,7 @@
 # www.overfitting.net
 # https://www.overfitting.net/
 
-    
+
 library(raster)  # read GeoTIFF, reprojection, crop and resample
 library(tiff)  # save 16-bit TIFF's
 library(png)  # save 8-bit PNG's
@@ -42,6 +42,115 @@ hillshade=function(map, dx=25, dlight=c(0, 2, 3), gamma=1) {
     
     return(hillshade^(1/gamma))
 }
+
+NewBitmap = function(dimx, dimy, val=0) {
+    # Crea bitmap de dimensiones dimx y dimy
+    return(array(val,c(dimx,dimy)))
+}
+
+# Por Carlos Gil Bellosta
+indices.drawline = function(x0, y0, x1, y1) {
+    x0=round(x0)
+    x1=round(x1)
+    y0=round(y0)
+    y1=round(y1)
+    
+    if (y0 == y1) return(cbind(x0:x1, y0)) # Recta de m=0 o un punto
+    if (abs(x1 - x0) >= abs(y1 - y0)) { # Recta de 0 < |m| <= 1
+        m = (y1 - y0) / (x1 - x0)
+        cbind(x0:x1, round(y0 + m * ((x0:x1) - x0)))
+    } else indices.drawline(y0, x0, y1, x1)[, 2:1]  # Recta de |m| > 1
+    # Llamada traspuesta recursiva y traspuesta
+}
+
+DrawLine = function(img, x0, y0, x1, y1, inc=TRUE, val=1) {
+    # Dibuja recta desde (x0,y0)-(x1,y1)
+    # Por defecto método no destructivo y con valor=1
+    indices=indices.drawline(x0, y0, x1, y1)
+    if (inc) img[indices]=img[indices]+val
+    else img[indices]=val
+    
+    return(img)
+}
+
+DrawRect = function(img, x0, y0, x1, y1, inc=TRUE, val=1, fill=FALSE) {
+    # Dibuja rectángulo (x0,y0)-(x1,y1)
+    # Por defecto método no destructivo, con valor=1 y sin relleno
+    x0=round(x0)
+    x1=round(x1)
+    y0=round(y0)
+    y1=round(y1)
+    
+    if (fill) {
+        if (inc) img[x0:x1,y0:y1]=img[x0:x1,y0:y1]+val
+        else img[x0:x1,y0:y1]=val
+        
+        return(img)
+    } else {
+        indices=which( ( (row(img)==x0         | row(img)==x1        ) &
+                         (col(img)>=min(y0,y1) & col(img)<=max(y0,y1)) ) |
+                       ( (col(img)==y0         | col(img)==y1        ) &
+                         (row(img)>=min(x0,x1) & row(img)<=max(x0,x1)) ) )
+        if (inc) img[indices]=img[indices]+val
+        else img[indices]=val
+        
+        return(img)
+    }
+}
+
+DibujarNumero = function(img, x0, y0, inc=FALSE, val=1, fill=FALSE,
+                         num, width, height) {
+    # Dibuja cifra 0-9 en (x0,y0)
+    # Por defecto método no destructivo y con valor=1
+    
+    if (num=='0') { 
+        img=DrawRect(img, x0, y0, x0+width, y0-height, inc, val, fill)
+    } else if (num=='1') {
+        img=DrawLine(img, x0+width, y0, x0+width, y0-height, inc, val)
+    } else if (num=='2') {
+        img=DrawLine(img, x0, y0, x0+width, y0, inc, val)
+        img=DrawLine(img, x0+width, y0, x0+width, y0-height/2, inc, val)
+        img=DrawLine(img, x0+width, y0-height/2, x0, y0-height/2, inc, val)
+        img=DrawLine(img, x0, y0-height/2, x0, y0-height, inc, val)
+        img=DrawLine(img, x0, y0-height, x0+width, y0-height, inc, val)
+    } else if (num=='3') {
+        img=DrawLine(img, x0, y0, x0+width, y0, inc, val)
+        img=DrawLine(img, x0, y0-height/2, x0+width, y0-height/2, inc, val)
+        img=DrawLine(img, x0, y0-height, x0+width, y0-height, inc, val)
+        img=DrawLine(img, x0+width, y0, x0+width, y0-height, inc, val)
+    } else if (num=='4') {
+        img=DrawLine(img, x0, y0, x0, y0-height/2, inc, val)
+        img=DrawLine(img, x0, y0-height/2, x0+width, y0-height/2, inc, val)
+        img=DrawLine(img, x0+width, y0, x0+width, y0-height, inc, val)
+    } else if (num=='5') {
+        img=DrawLine(img, x0+width, y0, x0, y0, inc, val)
+        img=DrawLine(img, x0, y0, x0, y0-height/2, inc, val)
+        img=DrawLine(img, x0, y0-height/2, x0+width, y0-height/2, inc, val)
+        img=DrawLine(img, x0+width, y0-height/2, x0+width, y0-height, inc, val)
+        img=DrawLine(img, x0+width, y0-height, x0, y0-height, inc, val)
+    } else if (num=='6') {
+        img=DrawRect(img, x0, y0-height/2, x0+width, y0-height, inc, val, fill)
+        img=DrawLine(img, x0, y0, x0+width, y0, inc, val)
+        img=DrawLine(img, x0, y0, x0, y0-height/2, inc, val)
+    } else if (num=='7') {
+        img=DrawLine(img, x0, y0, x0+width, y0, inc, val)
+        img=DrawLine(img, x0+width, y0, x0+width, y0-height, inc, val)
+    } else if (num=='8') {
+        img=DrawRect(img, x0, y0, x0+width, y0-height/2, inc, val, fill)
+        img=DrawRect(img, x0, y0-height/2, x0+width, y0-height, inc, val, fill)
+    } else if (num=='9') {
+        img=DrawRect(img, x0, y0, x0+width, y0-height/2, inc, val, fill)
+        img=DrawLine(img, x0+width, y0-height/2, x0+width, y0-height, inc, val)
+        img=DrawLine(img, x0, y0-height, x0+width, y0-height, inc, val)
+    } else if (num=='-') {
+        img=DrawLine(img, x0, y0-height/2, x0+width, y0-height/2, inc, val)
+    } else {
+        return(img)  # Cifra inválida
+    }
+
+    return(img)
+}
+
 
 
 ###########################################################
@@ -163,40 +272,56 @@ MAXHEIGHT=max(DEM)
 MINHEIGHT=min(DEM)
 COLUP=2
 COLDOWN=0.5
-WATERMIN=0.2  # to difusse under water colours
-WATERMAX=0.8
+WATERMIN=0.3  # difusse under water colours a bit
+WATERMAX=0.7
+BORDERCOLOUR=0.2
 
 mappre=array(0, c(DIMY, DIMX, 3))
 mappre[,,1]=hill
 mappre[,,2]=hill
 mappre[,,3]=hill
-indicesborder=which(outline==1)  # draw map borders
-mappre[,,1][indicesborder]=0
-mappre[,,2][indicesborder]=0
-mappre[,,3][indicesborder]=0
+border=which(outline==1)  # draw map borders
 
 # Initial sequence (water spreads)
 NFRAMES=2190  # 73.00s audio track at 30fps
 RATIO=2  # to slow down initial phases
 for (frame in 0:(NFRAMES-1)) {
     WATERLEVEL=MAXHEIGHT * (frame/(NFRAMES-1))^RATIO
-    indicesland=which(DEM>=WATERLEVEL)
-    indiceswater=which(DEM<WATERLEVEL)
+
+    land=which(DEM>=WATERLEVEL)
+    water=which(DEM<WATERLEVEL)
     map=mappre
-    map[,,1][indicesland]=map[,,1][indicesland]^(1/COLUP)  # R land
-    map[,,3][indicesland]=map[,,3][indicesland]^(1/COLDOWN)  # B land
+    map[,,1][land]=map[,,1][land]^(1/COLUP)  # R land
+    map[,,3][land]=map[,,3][land]^(1/COLDOWN)  # B land
     
-    map[,,1][indiceswater]=map[,,1][indiceswater]^(1/COLDOWN)  # R water
-    map[,,1][indiceswater]=(WATERMAX-WATERMIN)*map[,,1][indiceswater]+WATERMIN
-    map[,,2][indiceswater]=(WATERMAX-WATERMIN)*map[,,2][indiceswater]+WATERMIN
-    map[,,3][indiceswater]=(WATERMAX-WATERMIN)*map[,,3][indiceswater]+WATERMIN
+    map[,,1][water]=map[,,1][water]^(1/COLDOWN)  # R water
+    map[,,1][water]=(WATERMAX-WATERMIN)*map[,,1][water]+WATERMIN
+    map[,,2][water]=(WATERMAX-WATERMIN)*map[,,2][water]+WATERMIN
+    map[,,3][water]=(WATERMAX-WATERMIN)*map[,,3][water]+WATERMIN
+    
+    map[,,1][border]=BORDERCOLOUR
+    map[,,2][border]=BORDERCOLOUR
+    map[,,3][border]=BORDERCOLOUR
+    
+    # Write water level label
+    label=NewBitmap(103, 31)
+    TXT=as.character(round(WATERLEVEL))
+    LONG=nchar(TXT)
+    for (i in 1:LONG) {
+        num=substring(TXT, i, i)
+        label=DibujarNumero(label, 1+i*22-22, 31, num=num, width=14, height=30)
+    }
+    label=t(label[,ncol(label):1])
+    meters=which(label==1)
+    map[1000:(1000+31-1),(954-(LONG-1)/2*22):(954-(LONG-1)/2*22+103-1),1][meters]=0
+    map[1000:(1000+31-1),(954-(LONG-1)/2*22):(954-(LONG-1)/2*22+103-1),2][meters]=0
+    map[1000:(1000+31-1),(954-(LONG-1)/2*22):(954-(LONG-1)/2*22+103-1),3][meters]=0
     
     writePNG(map, paste0("img", ifelse(frame<10, "000",
                 ifelse(frame<100, "00",
                 ifelse(frame<1000, "0", ""))), frame, ".png"))
     
     print(paste0(frame+1, "/", NFRAMES, ": Water level ", WATERLEVEL))
-    
 }
 
 # Final sequence (land spreads)
@@ -205,23 +330,40 @@ NFRAMES=544  # 18.13s audio track at 30fps
 RATIO=1/2  # to speed up initial phases
 for (frame in 0:(NFRAMES-1)) {
     WATERLEVEL=(MINHEIGHT-MAXHEIGHT) * (frame/(NFRAMES-1))^RATIO + MAXHEIGHT
-    indicesland=which(DEM>=WATERLEVEL)
-    indiceswater=which(DEM<WATERLEVEL)
+    land=which(DEM>=WATERLEVEL)
+    water=which(DEM<WATERLEVEL)
     map=mappre
-    map[,,1][indicesland]=map[,,1][indicesland]^(1/COLUP)  # R land
-    map[,,3][indicesland]=map[,,3][indicesland]^(1/COLDOWN)  # B land
+    map[,,1][land]=map[,,1][land]^(1/COLUP)  # R land
+    map[,,3][land]=map[,,3][land]^(1/COLDOWN)  # B land
     
-    map[,,1][indiceswater]=map[,,1][indiceswater]^(1/COLDOWN)  # R water
-    map[,,1][indiceswater]=(WATERMAX-WATERMIN)*map[,,1][indiceswater]+WATERMIN
-    map[,,2][indiceswater]=(WATERMAX-WATERMIN)*map[,,2][indiceswater]+WATERMIN
-    map[,,3][indiceswater]=(WATERMAX-WATERMIN)*map[,,3][indiceswater]+WATERMIN
+    map[,,1][water]=map[,,1][water]^(1/COLDOWN)  # R water
+    map[,,1][water]=(WATERMAX-WATERMIN)*map[,,1][water]+WATERMIN
+    map[,,2][water]=(WATERMAX-WATERMIN)*map[,,2][water]+WATERMIN
+    map[,,3][water]=(WATERMAX-WATERMIN)*map[,,3][water]+WATERMIN
+
+    map[,,1][border]=BORDERCOLOUR
+    map[,,2][border]=BORDERCOLOUR
+    map[,,3][border]=BORDERCOLOUR
     
+    # Write water level label
+    label=NewBitmap(103, 31)
+    TXT=as.character(round(WATERLEVEL))
+    LONG=nchar(TXT)
+    for (i in 1:LONG) {
+        num=substring(TXT, i, i)
+        label=DibujarNumero(label, 1+i*22-22, 31, num=num, width=14, height=30)
+    }
+    label=t(label[,ncol(label):1])
+    meters=which(label==1)
+    map[1000:(1000+31-1),(954-(LONG-1)/2*22):(954-(LONG-1)/2*22+103-1),1][meters]=0
+    map[1000:(1000+31-1),(954-(LONG-1)/2*22):(954-(LONG-1)/2*22+103-1),2][meters]=0
+    map[1000:(1000+31-1),(954-(LONG-1)/2*22):(954-(LONG-1)/2*22+103-1),3][meters]=0
+
     writePNG(map, paste0("img", ifelse(frame+Offset<10, "000",
                 ifelse(frame+Offset<100, "00",
                 ifelse(frame+Offset<1000, "0", ""))), frame+Offset, ".png"))
     
     print(paste0(frame+1, "/", NFRAMES, ": Water level ", WATERLEVEL))
-    
 }
 
 
@@ -229,3 +371,7 @@ for (frame in 0:(NFRAMES-1)) {
 # Building MP4:
 # ffmpeg -framerate 30 -i img%4d.png -i oblivionwakingup.wav
 #        -c:v libx264 -crf 18 -pix_fmt yuv420p deepwaters.mp4
+
+
+
+
