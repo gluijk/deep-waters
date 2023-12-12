@@ -352,7 +352,7 @@ for (frame in 0:(NFRAMES-1)) {
     
     # Write water level label
     label=NewBitmap(103, 31)
-    TXT=as.character(round(WATERLEVEL))
+    TXT=paste0(as.character(round(WATERLEVEL)),'m')
     LONG=nchar(TXT)
     for (i in 1:LONG) {
         num=substring(TXT, i, i)
