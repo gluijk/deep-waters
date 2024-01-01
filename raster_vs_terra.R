@@ -96,8 +96,10 @@ plot(deepwatersrs2)
 abline(v=0)  # Greenwich meridian
 
 
-# IMPROVEMENTS terra/raster
-# action    raster      terra       unit    Improvement
+# Improvement raster vs terra packages:
+
+# action    raster      terra       unit    terra/raster
+# --------- ----------- ----------- ------- ------------
 # REPROJECT 4.666385    1.858117    min     39.8%
 # PLOT      103.1214    10.92895    s       10.6%
 # CROP      4.796154    2.65933     s       55.4%
