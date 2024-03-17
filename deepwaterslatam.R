@@ -1,6 +1,6 @@
 # Deep Waters. Practice with GeoTIFF format and raster package
 # www.overfitting.net
-# https://www.overfitting.net/
+# https://www.overfitting.net/2023/12/simulacion-de-diluvio-universal-con-r.html
 
 
 library(raster)  # read GeoTIFF, reprojection, crop and resample

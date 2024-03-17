@@ -1,6 +1,6 @@
 # Deep Waters. Practice with GeoTIFF format and raster package
 # www.overfitting.net
-# https://www.overfitting.net/
+# https://www.overfitting.net/2023/12/simulacion-de-diluvio-universal-con-r.html
 
 
 library(raster)  # read GeoTIFF, reprojection, crop and resample
@@ -65,7 +65,7 @@ indices.drawline = function(x0, y0, x1, y1) {
 
 DrawLine = function(img, x0, y0, x1, y1, inc=TRUE, val=1) {
     # Dibuja recta desde (x0,y0)-(x1,y1)
-    # Por defecto método no destructivo y con valor=1
+    # Por defecto m?todo no destructivo y con valor=1
     indices=indices.drawline(x0, y0, x1, y1)
     if (inc) img[indices]=img[indices]+val
     else img[indices]=val
@@ -74,8 +74,8 @@ DrawLine = function(img, x0, y0, x1, y1, inc=TRUE, val=1) {
 }
 
 DrawRect = function(img, x0, y0, x1, y1, inc=TRUE, val=1, fill=FALSE) {
-    # Dibuja rectángulo (x0,y0)-(x1,y1)
-    # Por defecto método no destructivo, con valor=1 y sin relleno
+    # Dibuja rect?ngulo (x0,y0)-(x1,y1)
+    # Por defecto m?todo no destructivo, con valor=1 y sin relleno
     x0=round(x0)
     x1=round(x1)
     y0=round(y0)
@@ -101,7 +101,7 @@ DrawRect = function(img, x0, y0, x1, y1, inc=TRUE, val=1, fill=FALSE) {
 DibujarNumero = function(img, x0, y0, inc=FALSE, val=1, fill=FALSE,
                          num, width, height) {
     # Dibuja cifra 0-9 en (x0,y0)
-    # Por defecto método no destructivo y con valor=1
+    # Por defecto m?todo no destructivo y con valor=1
     
     if (num=='0') { 
         img=DrawRect(img, x0, y0, x0+width, y0-height, inc, val, fill)
@@ -150,7 +150,7 @@ DibujarNumero = function(img, x0, y0, inc=FALSE, val=1, fill=FALSE,
         img=DrawLine(img, x0+width/2, y0-height/2, x0+width/2, y0-height, inc, val)
         img=DrawLine(img, x0+width, y0-height/2, x0+width, y0-height, inc, val)
     } else {
-        return(img)  # Cifra inválida
+        return(img)  # Cifra inv?lida
     }
 
     return(img)
