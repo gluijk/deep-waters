@@ -65,7 +65,7 @@ indices.drawline = function(x0, y0, x1, y1) {
 
 DrawLine = function(img, x0, y0, x1, y1, inc=TRUE, val=1) {
     # Dibuja recta desde (x0,y0)-(x1,y1)
-    # Por defecto m?todo no destructivo y con valor=1
+    # Por defecto método no destructivo y con valor=1
     indices=indices.drawline(x0, y0, x1, y1)
     if (inc) img[indices]=img[indices]+val
     else img[indices]=val
@@ -75,7 +75,7 @@ DrawLine = function(img, x0, y0, x1, y1, inc=TRUE, val=1) {
 
 DrawRect = function(img, x0, y0, x1, y1, inc=TRUE, val=1, fill=FALSE) {
     # Dibuja rectángulo (x0,y0)-(x1,y1)
-    # Por defecto m?todo no destructivo, con valor=1 y sin relleno
+    # Por defecto método no destructivo, con valor=1 y sin relleno
     x0=round(x0)
     x1=round(x1)
     y0=round(y0)
